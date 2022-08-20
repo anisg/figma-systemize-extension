@@ -27,7 +27,32 @@ function determineDesignAutoLayoutState(
     ? "expanded"
     : "off";
 }
-function updatedDesignAutoLayoutSpaceBetweenState(
+
+function handleKeyDown(ev, scale) {
+  switch (ev.key) {
+    case "ArrowLeft":
+      // Left pressed
+      break;
+    case "ArrowRight":
+      // Right pressed
+      break;
+    case "ArrowUp":
+      // Up pressed
+      // get current value
+      ev.stopPropagation();
+      const next = findNextInScale(scale, Number.parseInt(ev.target.value));
+      setVal(ev.target, next);
+      break;
+    case "ArrowDown":
+      // Down pressed
+      ev.stopPropagation();
+      const prev = findPrevInScale(scale, Number.parseInt(ev.target.value));
+      setVal(ev.target, prev);
+      break;
+  }
+}
+
+function watchDesignAutoLayoutSpaceBetweenState(
   state: ConfigPanelStateInDesignMode
 ) {
   const autoLayout = state.design.autoLayout;
@@ -38,40 +63,42 @@ function updatedDesignAutoLayoutSpaceBetweenState(
 
   // attach watcher to space-between
   const inputEl = autoLayout.expanded.spaceBetween._el.querySelector("input");
-  console.log("attach to input");
   inputEl.addEventListener("keydown", (ev) => {
-    switch (ev.key) {
-      case "ArrowLeft":
-        // Left pressed
-        break;
-      case "ArrowRight":
-        // Right pressed
-        break;
-      case "ArrowUp":
-        // Up pressed
-        // get current value
-        ev.stopPropagation();
-        const next = findNextInScale(
-          scales.autoLayout.spaceBetweenItems,
-          Number.parseInt(inputEl.value)
-        );
-        setVal(inputEl, next);
-        break;
-      case "ArrowDown":
-        // Down pressed
-        ev.stopPropagation();
-        const prev = findPrevInScale(
-          scales.autoLayout.spaceBetweenItems,
-          Number.parseInt(inputEl.value)
-        );
-        setVal(inputEl, prev);
-        break;
-    }
+    handleKeyDown(ev, scales.autoLayout.spaceBetweenItems);
   });
   console.log(
     "autoLayout.expanded.spaceBetween",
     autoLayout.expanded.spaceBetween
   );
+}
+
+function watchDesignAutoLayoutPaddingState(
+  state: ConfigPanelStateInDesignMode
+) {
+  const autoLayout = state.design.autoLayout;
+
+  autoLayout.expanded.padding = {
+    _horizontalEl: autoLayout._el.querySelector(
+      `[aria-label="Horizontal padding"]`
+    ),
+    _verticalEl: autoLayout._el.querySelector(
+      `[aria-label="Vertical padding"]`
+    ),
+  };
+
+  // attach watcher to padding input
+  const inputEl =
+    autoLayout.expanded.padding._horizontalEl.querySelector("input");
+  inputEl.addEventListener("keydown", (ev) => {
+    handleKeyDown(ev, scales.autoLayout.padding);
+  });
+  const inputEl2 =
+    autoLayout.expanded.padding._verticalEl.querySelector("input");
+  inputEl2.addEventListener("keydown", (ev) => {
+    handleKeyDown(ev, scales.autoLayout.padding);
+  });
+
+  console.log("autoLayout.expanded.padding", autoLayout.expanded.padding);
 }
 
 async function setVal(inputEl, val) {
@@ -118,18 +145,23 @@ export function watchDesignAutoLayoutState(
   autoLayout.state = determineDesignAutoLayoutState(state);
 
   // watch changes
-  watchDomChanges(_el.children[0].querySelector(`span[role="button"]`), {
-    ["updated-attribute"]: (x, el) => {
-      if (x.attributeName == "aria-label") {
-        watchDesignAutoLayoutState(state);
-      }
-    },
-  });
+  watchDomChanges(
+    `toggleButton`,
+    _el.children[0].querySelector(`span[role="button"]`),
+    {
+      ["updated-attribute"]: (x, el) => {
+        if (x.attributeName == "aria-label") {
+          watchDesignAutoLayoutState(state);
+        }
+      },
+    }
+  );
 
   if (autoLayout.state == "expanded") {
     autoLayout.expanded = {
       direction: "unknown",
     };
-    updatedDesignAutoLayoutSpaceBetweenState(state);
+    watchDesignAutoLayoutSpaceBetweenState(state);
+    watchDesignAutoLayoutPaddingState(state);
   }
 }

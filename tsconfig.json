@@ -20,11 +20,6 @@
   "include": ["src/injectScript", "src/background"],
   "files": [
     "./src/injectScript/injectScript.ts",
-    "./src/background/background.ts",
-    "./src/injectScript/stateWatcher/findAutoLayoutBlock.ts",
-    "./src/injectScript/stateWatcher/updateDesignPanelState.ts",
-    "./src/injectScript/stateWatcher/updateState.ts",
-    "./src/injectScript/stateWatcher/watchDesignPropertiesPanelOpening.ts",
-    "./src/injectScript/stateWatcher/updateDesignPanelState.ts"
+    "./src/background/background.ts"
   ]
 }

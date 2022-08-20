@@ -329,6 +329,43 @@ export function triggerEventOnAddOrDeleteDirectChild(
   observer.observe(targetNode, config);
 }
 
+export function triggerEventOnUpdatedChild(
+  mutationObserverId: string,
+  targetNode: Element,
+  childCssSelector,
+  callback: (eventAction: "created" | "deleted", childEl: Element) => void
+) {
+  if (mutationObserverId in mutationObserversMap) {
+    console.log("stop observer", mutationObserverId);
+    mutationObserversMap[mutationObserverId].disconnect();
+    delete mutationObserversMap[mutationObserverId];
+  }
+  var config = {
+    attributes: false,
+    childList: true,
+    subtree: false,
+  };
+  var observer = new MutationObserver((mutationsList) => {
+    mutationsList.forEach((mutation) => {
+      if (mutation.type != "childList") return;
+      if (mutation.target !== targetNode) return;
+      // check addition
+      const createdEl: Element = [...mutation.addedNodes].find(
+        (el: any) => el.matches && el.matches(childCssSelector)
+      ) as any;
+      createdEl && callback("created", createdEl);
+
+      // check removal
+      const removedEl: Element = [...mutation.removedNodes].find(
+        (el: any) => el.matches && el.matches(childCssSelector)
+      ) as any;
+      removedEl && callback("deleted", null);
+    });
+  });
+  mutationObserversMap[mutationObserverId] = observer;
+  observer.observe(targetNode, config);
+}
+
 export function createHtmlElement(str: string) {
   var child = document.createElement("div");
   child.innerHTML = str;

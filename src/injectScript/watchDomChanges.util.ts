@@ -1,32 +1,33 @@
-const mutationObserverElements: {
-  element: Element;
-  id: string;
-  observer: any;
-}[] = [];
+const mutationObserverElementsMap: Record<
+  string,
+  {
+    element: Element;
+    id: string;
+    observer: any;
+  }
+> = {};
 
 export function _watchDomChanges(
   { el, id }: { el: Element; id: string },
   config: MutationObserverInit,
   callback: (mutationRecords: MutationRecord[]) => void
 ) {
-  const idx = mutationObserverElements.findIndex(
-    (e) => e.element == el && e.id === id
-  );
-  if (idx != -1) {
-    console.log("found duplicate", el, id);
-    const existingObserver = mutationObserverElements[idx];
+  if (id in mutationObserverElementsMap) {
+    const existingObserver = mutationObserverElementsMap[id];
+    console.log("found duplicate", id);
     existingObserver.observer.disconnect();
-    mutationObserverElements.splice(idx, 1);
+    delete mutationObserverElementsMap[id];
   }
 
   var observer = new MutationObserver((mutationsList) => {
     callback(mutationsList);
   });
 
-  mutationObserverElements[id] = { element: el, id, observer };
+  mutationObserverElementsMap[id] = { element: el, id, observer };
 
   observer.observe(el, config);
 }
+
 type WithId<Type> = {
   [Property in keyof Type]: Type[Property] & { id: Property };
 };
@@ -49,6 +50,7 @@ function determineConfigGivenEvents(
 }
 
 export function watchDomChanges(
+  id: string,
   el: Element,
   eventsMap: {
     [Property in keyof EventType]: (
@@ -58,8 +60,6 @@ export function watchDomChanges(
   }
 ) {
   const eventIds = Object.keys(eventsMap) as (keyof EventType)[];
-  console.log("watching", el, eventIds);
-  const id = eventIds.sort().join(",");
 
   _watchDomChanges(
     { el, id },

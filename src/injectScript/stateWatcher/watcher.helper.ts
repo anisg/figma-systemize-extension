@@ -75,6 +75,10 @@ export type ConfigPanelState = {
         spaceBetween?: {
           _el: Element;
         };
+        padding?: {
+          _verticalEl: Element;
+          _horizontalEl: Element;
+        };
       };
     };
   };
