@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2016",
+    "sourceMap": false,
+    "types": ["@types/chrome", "node"],
+    "typeRoots": ["node_modules/@types"],
+    "moduleResolution": "node",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2016", "dom", "dom.iterable"]
+  },
+  "include": ["src/injectScript", "src/background"],
+  "files": [
+    "./src/injectScript/injectScript.ts",
+    "./src/background/background.ts",
+    "./src/injectScript/stateWatcher/findAutoLayoutBlock.ts",
+    "./src/injectScript/stateWatcher/updateDesignPanelState.ts",
+    "./src/injectScript/stateWatcher/updateState.ts",
+    "./src/injectScript/stateWatcher/watchDesignPropertiesPanelOpening.ts",
+    "./src/injectScript/stateWatcher/updateDesignPanelState.ts"
+  ]
+}
