@@ -31,13 +31,10 @@ export async function catcherAsync<T extends Error, X>(
   }
 }
 
-export async function logWrapper<X>(
-  action: string,
-  fn: () => Promise<X>
-): Promise<X> {
+export function logWrapper<X>(action: string, fn: () => X): X {
   const _log = logProgress(`'${action}' started`);
   try {
-    const r = await fn();
+    const r = fn();
     _log.done(`'${action}' successfully completed`);
     return r;
   } catch (e) {

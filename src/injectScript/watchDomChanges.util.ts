@@ -14,7 +14,6 @@ export function _watchDomChanges(
 ) {
   if (id in mutationObserverElementsMap) {
     const existingObserver = mutationObserverElementsMap[id];
-    console.log("found duplicate", id);
     existingObserver.observer.disconnect();
     delete mutationObserverElementsMap[id];
   }

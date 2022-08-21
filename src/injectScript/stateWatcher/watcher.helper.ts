@@ -81,6 +81,12 @@ export type ConfigPanelState = {
         };
       };
     };
+    frame?: {
+      _el: Element;
+      borderRadius?: {
+        _el: Element;
+      };
+    };
   };
 };
 

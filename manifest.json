@@ -4,10 +4,8 @@
   "manifest_version": 3,
   "description": "",
   "icons": {
-    "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-
   "content_scripts": [
     {
       "matches": ["https://*.figma.com/file/*"],
@@ -29,7 +27,7 @@
   },
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "Airtable Rich Text Editor"
+    "default_title": "Figma Systemize"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
