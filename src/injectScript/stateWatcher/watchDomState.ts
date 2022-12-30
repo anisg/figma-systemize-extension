@@ -1,9 +1,5 @@
 import { CustomException } from "../exception.util";
-import {
-  repeatWhileNotTrue,
-  sleep,
-  triggerEventOnAddOrDeleteDirectChild,
-} from "../utils";
+import { repeatWhileNotTrue, sleep, triggerEventOnAddOrDeleteDirectChild } from "../utils";
 import { ConfigPanelState, attachPanelContent } from "./watcher.helper";
 import { watchRightPanelState } from "./watchRightPanelState";
 
@@ -13,15 +9,10 @@ class CantLoadAppException extends CustomException {
 
 /** this will trigger a callback when the user will change panel tabs */
 function watchPanelContentChildrenChanges(state: ConfigPanelState, cb) {
-  triggerEventOnAddOrDeleteDirectChild(
-    "designPropertyPanelOpening",
-    state._el,
-    `:not([class*="tabsHeader"])`,
-    (action) => {
-      if (action == "deleted") return;
-      cb(action);
-    }
-  );
+  triggerEventOnAddOrDeleteDirectChild("designPropertyPanelOpening", state._el, `:not([class*="tabsHeader"])`, (action) => {
+    if (action == "deleted") return;
+    cb(action);
+  });
 }
 
 /** TODO: Dummy function, to improve */
@@ -30,7 +21,7 @@ function pageHasLoadingScreen() {
 }
 
 async function waitUntilAppFullyLoaded(state: ConfigPanelState) {
-  await sleep(1000);
+  await sleep(2000);
   await repeatWhileNotTrue(
     () => {
       const r = pageHasLoadingScreen();

@@ -1,11 +1,6 @@
 import { watch } from "fs";
 import { CustomException } from "../exception.util";
-import {
-  println,
-  repeatWhileNotTrue,
-  triggerEventOnAddOrDeleteDirectChild,
-  triggerEventOnSpecificChild,
-} from "../utils";
+import { println, repeatWhileNotTrue, triggerEventOnAddOrDeleteDirectChild, triggerEventOnSpecificChild } from "../utils";
 
 /**
  * DOM hierarchy of the right panel of Figma:
@@ -31,34 +26,29 @@ import {
  */
 export const panelDom = {
   findPropertyPanelContent() {
-    const propertyPanelRootEl = document.querySelector(
-      `div[name="propertiesPanelContainer"]`
-    );
+    const propertyPanelRootEl = document.querySelector(`div[name="propertiesPanelContainer"]`);
     return propertyPanelRootEl.children[0];
   },
   propertyPanelContent: {
     findDesignSectionsContainer(propertyPanelContent: Element) {
       let el = propertyPanelContent.children[1];
-      while (el?.tagName.toLowerCase() != "span") {
-        el = el.children[0];
-      }
-      return el.children[1];
+      return el.querySelector("[class*=properties_panel--propertiesPanel]");
+      // while (el?.tagName.toLowerCase() != "span") {
+      //   el = el.children[0];
+      // }
+      // return el.children[1];
     },
   },
 };
 
 function isInDesignMode(propertyPanelContentEl): boolean {
   // the creation
-  return propertyPanelContentEl.children[0].children[0].matches(
-    `[class*="tabActive"]`
-  );
+  return propertyPanelContentEl.children[0].children[0].matches(`[class*="tabActive"]`);
 }
 
 function isInPrototypeMode(propertyPanelContentEl): boolean {
   // the creation
-  return propertyPanelContentEl.children[0]?.children[1]?.matches(
-    `[class*="tabActive"]`
-  );
+  return propertyPanelContentEl.children[0]?.children[1]?.matches(`[class*="tabActive"]`);
 }
 
 export type ConfigPanelState = {
@@ -90,8 +80,7 @@ export type ConfigPanelState = {
   };
 };
 
-export type ConfigPanelStateInDesignMode = Omit<ConfigPanelState, "design"> &
-  Required<Pick<ConfigPanelState, "design">>;
+export type ConfigPanelStateInDesignMode = Omit<ConfigPanelState, "design"> & Required<Pick<ConfigPanelState, "design">>;
 
 type PanelTree = {
   rootContentEl: Element;
@@ -101,9 +90,7 @@ export function attachPanelContent(state: ConfigPanelState) {
   state._el = panelDom.findPropertyPanelContent();
 }
 
-export function determineCurrentTab(
-  state: ConfigPanelState
-): "design" | "prototype" | "inspect" {
+export function determineCurrentTab(state: ConfigPanelState): "design" | "prototype" | "inspect" {
   if (isInDesignMode(state._el)) {
     return "design";
   }

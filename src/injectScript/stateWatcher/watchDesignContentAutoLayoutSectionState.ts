@@ -8,11 +8,7 @@ import { watchRightPanelDesignContentState } from "./watchRightPanelDesignConten
 import { attachClickButton } from "./watchRightPanelState";
 
 export function findSectionByLabelName(designRootEl, name): Element | null {
-  const labelEl = [
-    ...designRootEl.querySelectorAll(
-      `.cachedSubtree > :first-child > :first-child > :first-child`
-    ),
-  ].find((el) => el.textContent.toLowerCase().includes(name.toLowerCase()));
+  const labelEl = [...designRootEl.querySelectorAll(`.cachedSubtree > :first-child > :first-child > :first-child`)].find((el) => el.textContent.toLowerCase().includes(name.toLowerCase()));
   if (!labelEl) return null;
   let parent = labelEl.parentNode as Element;
   while (!parent?.matches(`.cachedSubtree`)) {
@@ -23,15 +19,12 @@ export function findSectionByLabelName(designRootEl, name): Element | null {
 function findAutoLayoutBlock(state: ConfigPanelStateInDesignMode): Element {
   return findSectionByLabelName(state.design._el, `auto layout`);
 }
-function determineDesignAutoLayoutState(
-  state: ConfigPanelStateInDesignMode
-): "off" | "expanded" {
+function determineDesignAutoLayoutState(state: ConfigPanelStateInDesignMode): "off" | "expanded" {
   const autoLayout = state.design.autoLayout;
 
   const el = autoLayout._el;
-  return el.children[0].children[0].children[1].matches(`[aria-label="Remove"]`)
-    ? "expanded"
-    : "off";
+  console.log("el", el);
+  return el.children[0].querySelector('[aria-label="Remove"]') ? "expanded" : "off";
 }
 
 function handleKeyDown(ev, scale) {
@@ -47,6 +40,7 @@ function handleKeyDown(ev, scale) {
       // get current value
       ev.stopPropagation();
       const next = findNextInScale(scale, Number.parseInt(ev.target.value));
+      console.log("next", next);
       setVal(ev.target, next);
       break;
     case "ArrowDown":
@@ -67,64 +61,43 @@ export function attachScaleToInputChanges(el, scale: number[]) {
   });
 }
 
-function watchDesignAutoLayoutSpaceBetweenState(
-  state: ConfigPanelStateInDesignMode
-) {
+function watchDesignAutoLayoutSpaceBetweenState(state: ConfigPanelStateInDesignMode) {
   logWrapper("... > design layout > space between", () => {
     const autoLayout = state.design.autoLayout;
 
-    const _el = autoLayout._el.querySelector(
-      `[aria-label="Spacing between items"]`
-    );
+    const _el = autoLayout._el.querySelector(`[aria-label="Spacing between items"]`);
     if (!_el) return;
     autoLayout.expanded.spaceBetween = {
       _el: _el,
     };
 
     // attach watcher to space-between
-    attachScaleToInputChanges(
-      autoLayout.expanded.spaceBetween._el,
-      scales.autoLayout.spaceBetweenItems
-    );
+    attachScaleToInputChanges(autoLayout.expanded.spaceBetween._el, scales.autoLayout.spaceBetweenItems);
   });
 }
 
-function watchDesignAutoLayoutPaddingState(
-  state: ConfigPanelStateInDesignMode
-) {
+function watchDesignAutoLayoutPaddingState(state: ConfigPanelStateInDesignMode) {
   logWrapper("... > design layout > padding", () => {
     const autoLayout = state.design.autoLayout;
 
     autoLayout.expanded.padding = {
-      _horizontalEl: autoLayout._el.querySelector(
-        `[aria-label="Horizontal padding"]`
-      ),
-      _verticalEl: autoLayout._el.querySelector(
-        `[aria-label="Vertical padding"]`
-      ),
+      _horizontalEl: autoLayout._el.querySelector(`[aria-label="Horizontal padding"]`),
+      _verticalEl: autoLayout._el.querySelector(`[aria-label="Vertical padding"]`),
     };
 
     // attach watcher to padding input
     if (autoLayout.expanded.padding._horizontalEl) {
-      attachScaleToInputChanges(
-        autoLayout.expanded.padding._horizontalEl,
-        scales.autoLayout.padding
-      );
+      attachScaleToInputChanges(autoLayout.expanded.padding._horizontalEl, scales.autoLayout.padding);
     }
     if (autoLayout.expanded.padding._verticalEl) {
-      attachScaleToInputChanges(
-        autoLayout.expanded.padding._verticalEl,
-        scales.autoLayout.padding
-      );
+      attachScaleToInputChanges(autoLayout.expanded.padding._verticalEl, scales.autoLayout.padding);
     }
   });
 }
 
 async function setVal(inputEl, val) {
   inputEl.value = `${val}`;
-  const key = Object.keys(inputEl).find((k) =>
-    k.startsWith("__reactEventHandlers")
-  );
+  const key = Object.keys(inputEl).find((k) => k.startsWith("__reactProps"));
   inputEl[key].onChange({ target: inputEl });
   inputEl.blur();
   inputEl.parentElement.focus();
@@ -150,9 +123,7 @@ function findPrevInScale(scale: number[], x: number) {
   return scale[idx];
 }
 
-export function watchDesignAutoLayoutState(
-  state: ConfigPanelStateInDesignMode
-) {
+export function watchDesignAutoLayoutState(state: ConfigPanelStateInDesignMode) {
   logWrapper("design panel > auto layout", () => {
     const _el = findAutoLayoutBlock(state);
     if (!_el) {
@@ -165,28 +136,17 @@ export function watchDesignAutoLayoutState(
 
     const autoLayout = state.design.autoLayout;
     autoLayout.state = determineDesignAutoLayoutState(state);
+    log("auto layout state: " + autoLayout.state);
 
     // watch changes
-    log(
-      `watch auto layout state (currently it's ${
-        _el.children[0]
-          .querySelector(`span[role="button"]`)
-          .getAttribute("aria-label") == "Add"
-          ? "unset"
-          : "set"
-      })`
-    );
-    watchDomChanges(
-      `toggleButton`,
-      _el.children[0].querySelector(`span[role="button"]`),
-      {
-        ["updated-attribute"]: (x, el) => {
-          if (x.attributeName == "aria-label") {
-            watchRightPanelDesignContentState(state);
-          }
-        },
-      }
-    );
+    log(`watch auto layout state (currently it's ${_el.children[0].querySelector(`span[role="button"]`).getAttribute("aria-label") == "Add" ? "unset" : "set"})`);
+    watchDomChanges(`toggleButton`, _el.children[0].querySelector(`span[role="button"]`), {
+      ["updated-attribute"]: (x, el) => {
+        if (x.attributeName == "aria-label") {
+          watchRightPanelDesignContentState(state);
+        }
+      },
+    });
 
     if (autoLayout.state == "expanded") {
       autoLayout.expanded = {
@@ -195,6 +155,6 @@ export function watchDesignAutoLayoutState(
       watchDesignAutoLayoutSpaceBetweenState(state);
       watchDesignAutoLayoutPaddingState(state);
     }
-    attachClickButton(state);
+    // attachClickButton(state);
   });
 }

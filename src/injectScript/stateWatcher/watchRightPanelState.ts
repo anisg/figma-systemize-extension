@@ -7,12 +7,8 @@ function htmlString2El(s) {
   return wrapper.children[0];
 }
 
-const iconSvg = (
-  failed?
-) => `<svg class="svg" aria-label="Add comment" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="transparent">
-<circle cx="10" cy="10" r="9" stroke="${
-  !failed ? `#27AE60` : `#EB5757`
-}" stroke-width="2"/>
+const iconSvg = (failed?) => `<svg class="svg" aria-label="Add comment" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="transparent">
+<circle cx="10" cy="10" r="9" stroke="${!failed ? `#27AE60` : `#EB5757`}" stroke-width="2"/>
 </svg>
 `;
 
@@ -32,19 +28,17 @@ export function attachClickButton(state: ConfigPanelState) {
     });
   }
   cloned.children[0].children[0].remove();
-  cloned.children[0].appendChild(
-    htmlString2El(iconSvg(!state.design?.autoLayout))
-  );
+  cloned.children[0].appendChild(htmlString2El(iconSvg(!state.design?.autoLayout)));
 }
 
 export function watchRightPanelState(state: ConfigPanelState) {
   state.tab = determineCurrentTab(state);
+
+  attachClickButton(state);
 
   if (state.tab == "design") {
     watchRightPanelDesignContentState(state);
   } else {
     state.design = null;
   }
-  console.log("updated state", state);
-  attachClickButton(state);
 }
