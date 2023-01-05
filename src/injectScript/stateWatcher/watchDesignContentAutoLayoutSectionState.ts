@@ -23,7 +23,7 @@ function determineDesignAutoLayoutState(state: ConfigPanelStateInDesignMode): "o
   const autoLayout = state.design.autoLayout;
 
   const el = autoLayout._el;
-  console.log("el", el);
+  log("el", el);
   return el.children[0].querySelector('[aria-label="Remove"]') ? "expanded" : "off";
 }
 
@@ -40,7 +40,7 @@ function handleKeyDown(ev, scale) {
       // get current value
       ev.stopPropagation();
       const next = findNextInScale(scale, Number.parseInt(ev.target.value));
-      console.log("next", next);
+      log("next", next);
       setVal(ev.target, next);
       break;
     case "ArrowDown":
@@ -80,18 +80,10 @@ function watchDesignAutoLayoutPaddingState(state: ConfigPanelStateInDesignMode) 
   logWrapper("... > design layout > padding", () => {
     const autoLayout = state.design.autoLayout;
 
-    autoLayout.expanded.padding = {
-      _horizontalEl: autoLayout._el.querySelector(`[aria-label="Horizontal padding"]`),
-      _verticalEl: autoLayout._el.querySelector(`[aria-label="Vertical padding"]`),
-    };
-
-    // attach watcher to padding input
-    if (autoLayout.expanded.padding._horizontalEl) {
-      attachScaleToInputChanges(autoLayout.expanded.padding._horizontalEl, scales.autoLayout.padding);
-    }
-    if (autoLayout.expanded.padding._verticalEl) {
-      attachScaleToInputChanges(autoLayout.expanded.padding._verticalEl, scales.autoLayout.padding);
-    }
+    const els = autoLayout._el.querySelectorAll(`[aria-label*=" padding"]`);
+    els.forEach((el) => {
+      attachScaleToInputChanges(el, scales.autoLayout.padding);
+    });
   });
 }
 

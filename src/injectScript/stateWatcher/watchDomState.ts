@@ -1,4 +1,5 @@
 import { CustomException } from "../exception.util";
+import { log } from "../log.util";
 import { repeatWhileNotTrue, sleep, triggerEventOnAddOrDeleteDirectChild } from "../utils";
 import { ConfigPanelState, attachPanelContent } from "./watcher.helper";
 import { watchRightPanelState } from "./watchRightPanelState";
@@ -42,10 +43,11 @@ export async function watchDomState() {
   const state: ConfigPanelState = {
     loading: false,
   };
+  log("watching panel content changes");
   await waitUntilAppFullyLoaded(state);
   attachPanelContent(state);
 
   watchRightPanelState(state);
-
+  log("watching panel content children changes");
   watchPanelContentChildrenChanges(state, () => watchRightPanelState(state));
 }

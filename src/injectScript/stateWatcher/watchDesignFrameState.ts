@@ -1,10 +1,7 @@
 import { scales } from "../config";
 import { logWrapper } from "../exception.util";
 import { log } from "../log.util";
-import {
-  attachScaleToInputChanges,
-  findSectionByLabelName,
-} from "./watchDesignContentAutoLayoutSectionState";
+import { attachScaleToInputChanges, findSectionByLabelName } from "./watchDesignContentAutoLayoutSectionState";
 import { ConfigPanelState } from "./watcher.helper";
 
 function findFrameBlock(state: ConfigPanelState) {
@@ -19,14 +16,21 @@ function findBorderRadiusBlock(el) {
   return findByAriaLabelName(el, `Corner radius`);
 }
 
+function findAllBorderRadiusBlock(el): HTMLDivElement[] {
+  return [findBorderRadiusBlock(el), ...el.querySelectorAll(`[aria-label*="corner radius"]`)];
+}
+
+function attachAllCornerRadiusInput(state: ConfigPanelState) {
+  const els = findAllBorderRadiusBlock(state.design.frame._el);
+  els.forEach((el) => {
+    attachScaleToInputChanges(el, scales.frame.cornerRadius);
+  });
+}
+
 function watchCornerRadiusInput(state: ConfigPanelState) {
   logWrapper("... > frame section > corner radius input", () => {
-    const _borderRadiusEl = findBorderRadiusBlock(state.design.frame._el);
-    if (!_borderRadiusEl) return;
-    state.design.frame.borderRadius = {
-      _el: _borderRadiusEl,
-    };
-    attachScaleToInputChanges(_borderRadiusEl, scales.frame.cornerRadius);
+    // attachCornerRadiusInput(state);
+    attachAllCornerRadiusInput(state);
   });
 }
 

@@ -1,7 +1,7 @@
 export type ID = string;
 
-// export const println = (...args) => {};
-export const println = console.log;
+export const println = (...args) => {};
+// export const println = console.log;
 export const jdump = (obj: any) => JSON.stringify(obj, null, 2);
 export function isMacintosh() {
   return navigator.platform.indexOf("Mac") > -1;
@@ -102,13 +102,11 @@ export function getParameterByName(name, url?: string): null | string {
   if (!results[2]) return "";
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
-export const sleep = async (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = async (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function genId(length: number = 4) {
   var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -128,9 +126,7 @@ export function throttle(fn, waitMs: number) {
       prevFn = null;
     }
     return new Promise((resolve) => {
-      const x = last
-        ? Math.max(0, waitMs - (now.getTime() - last.getTime()))
-        : 0;
+      const x = last ? Math.max(0, waitMs - (now.getTime() - last.getTime())) : 0;
       prevFn = resolve;
       prevTimer = setTimeout(function () {
         last = now;
@@ -153,8 +149,7 @@ export function timeAgo(previous: Date) {
   var msPerMonth = msPerDay * 30;
   var msPerYear = msPerDay * 365;
 
-  var elapsed =
-    Date.parse(current.toString()) - Date.parse(previous.toString());
+  var elapsed = Date.parse(current.toString()) - Date.parse(previous.toString());
 
   const s = (d) => (d > 1 ? "s" : "");
   if (elapsed < msPerMinute) {
@@ -215,8 +210,7 @@ export const arrayMove = (array, from, to) => {
 };
 export function makeid(length: number) {
   var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -254,14 +248,9 @@ export function addCssStyle(styleString: string) {
 
 const mutationObserversMap: Record<string, MutationObserver> = {};
 
-export function triggerEventOnSpecificChild(
-  mutationObserverId: string,
-  targetNode: Element,
-  childCssSelector,
-  callback: (eventAction: "created" | "deleted", childEl: Element) => void
-) {
+export function triggerEventOnSpecificChild(mutationObserverId: string, targetNode: Element, childCssSelector, callback: (eventAction: "created" | "deleted", childEl: Element) => void) {
   if (mutationObserverId in mutationObserversMap) {
-    console.log("stop observer", mutationObserverId);
+    println("stop observer", mutationObserverId);
     mutationObserversMap[mutationObserverId].disconnect();
     delete mutationObserversMap[mutationObserverId];
   }
@@ -274,17 +263,13 @@ export function triggerEventOnSpecificChild(
     mutationsList.forEach((mutation) => {
       if (mutation.type != "childList") return;
       if (mutation.target !== targetNode) return;
-      console.log("root changed", mutation);
+      println("root changed", mutation);
       // check addition
-      const createdEl: Element = [...mutation.addedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const createdEl: Element = [...mutation.addedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       createdEl && callback("created", createdEl);
 
       // check removal
-      const removedEl: Element = [...mutation.removedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const removedEl: Element = [...mutation.removedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       removedEl && callback("deleted", null);
     });
   });
@@ -292,14 +277,9 @@ export function triggerEventOnSpecificChild(
   observer.observe(targetNode, config);
 }
 
-export function triggerEventOnAddOrDeleteDirectChild(
-  mutationObserverId: string,
-  targetNode: Element,
-  childCssSelector,
-  callback: (eventAction: "created" | "deleted", childEl: Element) => void
-) {
+export function triggerEventOnAddOrDeleteDirectChild(mutationObserverId: string, targetNode: Element, childCssSelector, callback: (eventAction: "created" | "deleted", childEl: Element) => void) {
   if (mutationObserverId in mutationObserversMap) {
-    console.log("stop observer", mutationObserverId);
+    println("stop observer", mutationObserverId);
     mutationObserversMap[mutationObserverId].disconnect();
     delete mutationObserversMap[mutationObserverId];
   }
@@ -313,15 +293,11 @@ export function triggerEventOnAddOrDeleteDirectChild(
       if (mutation.type != "childList") return;
       if (mutation.target !== targetNode) return;
       // check addition
-      const createdEl: Element = [...mutation.addedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const createdEl: Element = [...mutation.addedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       createdEl && callback("created", createdEl);
 
       // check removal
-      const removedEl: Element = [...mutation.removedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const removedEl: Element = [...mutation.removedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       removedEl && callback("deleted", null);
     });
   });
@@ -329,14 +305,9 @@ export function triggerEventOnAddOrDeleteDirectChild(
   observer.observe(targetNode, config);
 }
 
-export function triggerEventOnUpdatedChild(
-  mutationObserverId: string,
-  targetNode: Element,
-  childCssSelector,
-  callback: (eventAction: "created" | "deleted", childEl: Element) => void
-) {
+export function triggerEventOnUpdatedChild(mutationObserverId: string, targetNode: Element, childCssSelector, callback: (eventAction: "created" | "deleted", childEl: Element) => void) {
   if (mutationObserverId in mutationObserversMap) {
-    console.log("stop observer", mutationObserverId);
+    println("stop observer", mutationObserverId);
     mutationObserversMap[mutationObserverId].disconnect();
     delete mutationObserversMap[mutationObserverId];
   }
@@ -350,15 +321,11 @@ export function triggerEventOnUpdatedChild(
       if (mutation.type != "childList") return;
       if (mutation.target !== targetNode) return;
       // check addition
-      const createdEl: Element = [...mutation.addedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const createdEl: Element = [...mutation.addedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       createdEl && callback("created", createdEl);
 
       // check removal
-      const removedEl: Element = [...mutation.removedNodes].find(
-        (el: any) => el.matches && el.matches(childCssSelector)
-      ) as any;
+      const removedEl: Element = [...mutation.removedNodes].find((el: any) => el.matches && el.matches(childCssSelector)) as any;
       removedEl && callback("deleted", null);
     });
   });
@@ -372,10 +339,7 @@ export function createHtmlElement(str: string) {
   return child;
 }
 
-export async function repeatWhileNotTrue(
-  fn,
-  { intervalMs, timeoutMs }: { intervalMs: number; timeoutMs: number }
-) {
+export async function repeatWhileNotTrue(fn, { intervalMs, timeoutMs }: { intervalMs: number; timeoutMs: number }) {
   let elapsedMs = 0;
   while (elapsedMs < timeoutMs && !fn()) {
     await sleep(intervalMs);

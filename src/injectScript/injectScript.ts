@@ -1,10 +1,12 @@
 import { watchDomState } from "./stateWatcher/watchDomState";
+import { sleep } from "./utils";
 
 /* entry point of the script */
 async function main() {
-  window.addEventListener("load", async () => {
+  watchDomState();
+  setInterval(() => {
     watchDomState();
-  });
+  }, 2000);
 }
 
 main();
