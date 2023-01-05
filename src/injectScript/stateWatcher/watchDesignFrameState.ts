@@ -21,9 +21,9 @@ function findAllBorderRadiusBlock(el): HTMLDivElement[] {
 }
 
 function attachAllCornerRadiusInput(state: ConfigPanelState) {
-  const els = findAllBorderRadiusBlock(state.design.frame._el);
+  const els = findAllBorderRadiusBlock(state.design?._el);
   els.forEach((el) => {
-    attachScaleToInputChanges(el, scales.frame.cornerRadius);
+    attachScaleToInputChanges(el, "frame.cornerRadius");
   });
 }
 
@@ -37,10 +37,10 @@ function watchCornerRadiusInput(state: ConfigPanelState) {
 export function watchDesignFrameState(state: ConfigPanelState) {
   logWrapper("design panel > frame section", () => {
     const _el = findFrameBlock(state);
-    if (!_el) {
-      state.design.frame = null;
-      return;
-    }
+    // if (!_el) {
+    //   state.design.frame = null;
+    //   return;
+    // }
     state.design.frame = {
       _el,
     };

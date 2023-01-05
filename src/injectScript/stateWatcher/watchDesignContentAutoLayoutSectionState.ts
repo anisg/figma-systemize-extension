@@ -51,14 +51,24 @@ function handleKeyDown(ev, scale) {
       break;
   }
 }
+const onHandleKeyDownSpaceBetweenScale = (ev) => handleKeyDown(ev, scales.autoLayout.spaceBetweenItems);
+const onHandleKeyDownPaddingScale = (ev) => handleKeyDown(ev, scales.autoLayout.padding);
+const onHandleKeyDownCornerRadiusScale = (ev) => handleKeyDown(ev, scales.frame.cornerRadius);
+const eventsMap = {
+  "autoLayout.spaceBetweenItems": onHandleKeyDownSpaceBetweenScale,
+  "autoLayout.padding": onHandleKeyDownPaddingScale,
+  "frame.cornerRadius": onHandleKeyDownCornerRadiusScale,
+};
 
-export function attachScaleToInputChanges(el, scale: number[]) {
+export function attachScaleToInputChanges(el, scale: "autoLayout.padding" | "autoLayout.spaceBetweenItems" | "frame.cornerRadius") {
+  if (!el) return;
   log(`attach scale to "${el.getAttribute("aria-label")}" input`);
   // attach watcher
   const inputEl = el.querySelector("input");
-  inputEl.addEventListener("keydown", (ev) => {
-    handleKeyDown(ev, scale);
-  });
+  if (!inputEl.getAttribute("modified")) {
+    inputEl.addEventListener("keydown", eventsMap[scale]);
+    inputEl.setAttribute("modified", "true");
+  }
 }
 
 function watchDesignAutoLayoutSpaceBetweenState(state: ConfigPanelStateInDesignMode) {
@@ -72,7 +82,7 @@ function watchDesignAutoLayoutSpaceBetweenState(state: ConfigPanelStateInDesignM
     };
 
     // attach watcher to space-between
-    attachScaleToInputChanges(autoLayout.expanded.spaceBetween._el, scales.autoLayout.spaceBetweenItems);
+    attachScaleToInputChanges(autoLayout.expanded.spaceBetween._el, "autoLayout.spaceBetweenItems");
   });
 }
 
@@ -82,7 +92,7 @@ function watchDesignAutoLayoutPaddingState(state: ConfigPanelStateInDesignMode) 
 
     const els = autoLayout._el.querySelectorAll(`[aria-label*=" padding"]`);
     els.forEach((el) => {
-      attachScaleToInputChanges(el, scales.autoLayout.padding);
+      attachScaleToInputChanges(el, "autoLayout.padding");
     });
   });
 }
@@ -140,13 +150,17 @@ export function watchDesignAutoLayoutState(state: ConfigPanelStateInDesignMode) 
       },
     });
 
-    if (autoLayout.state == "expanded") {
-      autoLayout.expanded = {
-        direction: "unknown",
-      };
-      watchDesignAutoLayoutSpaceBetweenState(state);
-      watchDesignAutoLayoutPaddingState(state);
-    }
+    // if (autoLayout.state == "expanded") {
+    autoLayout.expanded = {
+      direction: "unknown",
+    };
+    // try {
+    watchDesignAutoLayoutSpaceBetweenState(state);
+    watchDesignAutoLayoutPaddingState(state);
+    // } catch (e) {
+    // console.error(e);
+    // }
+    // }
     // attachClickButton(state);
   });
 }

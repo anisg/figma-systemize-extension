@@ -6,7 +6,7 @@ async function main() {
   watchDomState();
   setInterval(() => {
     watchDomState();
-  }, 2000);
+  }, 1300);
 }
 
 main();
